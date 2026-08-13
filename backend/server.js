@@ -5,12 +5,18 @@ const path = require("path");
 
 const pool = require("./config/db");
 
+const productosRoutes = require("./routes/productos.routes");
+const categoriasRoutes = require("./routes/categorias.routes");
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "..", "frontend")));
+
+app.use("/api/productos", productosRoutes);
+app.use("/api/categorias", categoriasRoutes);
 
 app.get("/api/health", async (req, res) => {
   try {
