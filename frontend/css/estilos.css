@@ -1,0 +1,32 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  color: #222;
+  background-color: #fafafa;
+}
+
+header {
+  background-color: #2e7d32;
+  color: white;
+  padding: 2rem 1.5rem;
+  text-align: center;
+}
+
+header h1 {
+  font-size: 2rem;
+}
+
+main {
+  padding: 2rem 1.5rem;
+  text-align: center;
+}
+
+#estadoBackend {
+  font-size: 1.1rem;
+  color: #555;
+}
