@@ -9,4 +9,5 @@ node_modules/
 
 # Archivos de sistema
 .DS_Store
-Thumbs.db
+Thumbs.dbbackend/config/google-credentials.json
+backend/config/google-credentials.json

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mi carrito — Tianguis Digital</title>
+  <link rel="stylesheet" href="../css/estilos.css" />
+</head>
+<body>
+  <main>
+    <h2>Mi carrito de compras</h2>
+    <div id="listaCarrito">Cargando carrito...</div>
+    <div id="carritoTotal" class="carrito-total"></div>
+
+    <div class="form-container" style="margin-top:2rem;">
+      <h3>Dirección de entrega (México)</h3>
+      <form id="formCheckout">
+        <label for="calle">Calle</label>
+        <input type="text" id="calle" required />
+
+        <label for="numero">Número</label>
+        <input type="text" id="numero" required />
+
+        <label for="colonia">Colonia</label>
+        <input type="text" id="colonia" required />
+
+        <label for="codigo_postal">Código postal (5 dígitos)</label>
+        <input type="text" id="codigo_postal" pattern="[0-9]{5}" maxlength="5" required />
+
+        <label for="municipio">Municipio</label>
+        <input type="text" id="municipio" required />
+
+        <label for="estado">Estado</label>
+        <input type="text" id="estado" required />
+
+        <button type="submit">Confirmar pedido (pago simulado)</button>
+        <p id="mensajeCheckout" class="mensaje-error"></p>
+      </form>
+    </div>
+  </main>
+
+  <script src="../js/nav.js"></script>
+  <script src="../js/carrito.js"></script>
+  <script>
+    document.getElementById("formCheckout").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const mensaje = document.getElementById("mensajeCheckout");
+
+      const direccionNueva = {
+        calle: document.getElementById("calle").value.trim(),
+        numero: document.getElementById("numero").value.trim(),
+        colonia: document.getElementById("colonia").value.trim(),
+        codigo_postal: document.getElementById("codigo_postal").value.trim(),
+        municipio: document.getElementById("municipio").value.trim(),
+        estado: document.getElementById("estado").value.trim(),
+      };
+
+      try {
+        const res = await fetch("/api/pedidos", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${obtenerToken()}` },
+          body: JSON.stringify({ direccionNueva }),
+        });
+        const datos = await res.json();
+
+        if (!res.ok) {
+          mensaje.textContent = datos.error || "No se pudo generar el pedido";
+          mensaje.style.color = "#c0392b";
+          return;
+        }
+
+        mensaje.textContent = `¡Pedido #${datos.pedido.id_pedido} generado correctamente!`;
+        mensaje.style.color = "#2e7d32";
+        event.target.reset();
+        setTimeout(() => (window.location.href = "pedidos.html"), 1500);
+      } catch (error) {
+        mensaje.textContent = "No se pudo conectar con el servidor";
+        mensaje.style.color = "#c0392b";
+      }
+    });
+  </script>
+</body>
+</html>

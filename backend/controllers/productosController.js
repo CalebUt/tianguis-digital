@@ -74,4 +74,63 @@ async function obtenerPorId(req, res) {
   }
 }
 
-module.exports = { listar, obtenerPorId };
+// POST /api/productos (solo administrador)
+async function crear(req, res) {
+  const { nombre, descripcion, precio, id_categoria, existencia } = req.body;
+
+  try {
+    const resultado = await pool.query(
+      `INSERT INTO productos (id_usuario_vendedor, id_categoria, nombre, descripcion, precio, existencia)
+       VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+      [req.usuario.id_usuario, id_categoria, nombre, descripcion, precio, existencia]
+    );
+    res.status(201).json(resultado.rows[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al crear el producto" });
+  }
+}
+
+// PUT /api/productos/:id (solo administrador)
+async function actualizar(req, res) {
+  const { id } = req.params;
+  const { nombre, descripcion, precio, id_categoria, existencia } = req.body;
+
+  try {
+    const resultado = await pool.query(
+      `UPDATE productos SET nombre = $1, descripcion = $2, precio = $3, id_categoria = $4, existencia = $5
+       WHERE id_producto = $6 RETURNING *`,
+      [nombre, descripcion, precio, id_categoria, existencia, id]
+    );
+
+    if (resultado.rows.length === 0) {
+      return res.status(404).json({ error: "Producto no encontrado" });
+    }
+    res.json(resultado.rows[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al actualizar el producto" });
+  }
+}
+
+// DELETE /api/productos/:id (solo administrador) — desactiva, no borra físicamente
+async function desactivar(req, res) {
+  const { id } = req.params;
+
+  try {
+    const resultado = await pool.query(
+      `UPDATE productos SET estado = 'inactivo' WHERE id_producto = $1 RETURNING id_producto`,
+      [id]
+    );
+
+    if (resultado.rows.length === 0) {
+      return res.status(404).json({ error: "Producto no encontrado" });
+    }
+    res.json({ mensaje: "Producto desactivado correctamente" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al desactivar el producto" });
+  }
+}
+
+module.exports = { listar, obtenerPorId, crear, actualizar, desactivar };
